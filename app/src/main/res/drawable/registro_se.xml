@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/registro_se.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="360dp"
+    android:height="800dp"
+    android:viewportWidth="360"
+    android:viewportHeight="800">
+
+    <group>
+        <clip-path
+            android:pathData="M8 0H352C356.418 0 360 3.58172 360 8V792C360 796.418 356.418 800 352 800H8C3.58172 800 0 796.418 0 792V8C0 3.58172 3.58172 0 8 0Z"/>
+        <path
+            android:pathData="M0 0V800H360V0"
+            android:fillColor="#1E1E1E"/>
+    </group>
+</vector>
