@@ -28,6 +28,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import RegistroPantalla
+
 import com.example.anfeca.R // asegúrate de que tu paquete esté bien
 
 class MainActivity : ComponentActivity() {
@@ -78,4 +83,17 @@ fun CameraPreview() {
         },
         modifier = Modifier.fillMaxSize()
     )
+}
+
+
+
+@Composable
+fun AppNavigation() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "registro") {
+        composable("registro") { RegistroPantalla(navController) }
+        //composable("cuestionario_registro") { CuestionarioRegistro() }
+        //composable("inicio_sesion") { InicioSesion() }
+    }
 }

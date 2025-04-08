@@ -1,45 +1,84 @@
-package com.example.anfeca
-
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun RegistroPantalla() {
-    Box(
+fun RegistroPantalla(navController: NavController) {
+    Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = 32.dp, vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Fondo: vector drawable desde res/drawable/registro_se.xml
-        Image(
-            painter = painterResource(id = R.drawable.registro_se),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "INICIO",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFFFF8000) // naranja
         )
 
-        // Contenido encima del fondo
+        // Aquí irá la imagen central más tarde
+
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Registro de Usuario",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color.White
+                text = "Exprésate con seguridad",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                textAlign = TextAlign.Center
             )
+            Text(
+                text = "Practica desde la primera lección.",
+                fontSize = 14.sp,
+                color = Color.LightGray,
+                textAlign = TextAlign.Center
+            )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(
+                onClick = { navController.navigate("cuestionario_registro") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF8000), // naranja
+                    contentColor = Color.White
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Registrarse")
+            }
 
-            // Aquí puedes agregar campos de texto, botones, etc.
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row {
+                Text("¿Ya tienes una cuenta? ", color = Color.White)
+                Text(
+                    "Iniciar sesión",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        navController.navigate("inicio_sesion")
+                    }
+                )
+            }
         }
     }
 }
+
