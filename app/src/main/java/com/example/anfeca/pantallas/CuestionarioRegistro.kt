@@ -1,4 +1,4 @@
-package com.example.anfeca.ui.theme
+package com.example.anfeca.pantallas
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -14,9 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun CuestionarioRegistro() {
+fun CuestionarioRegistro(navController: NavController) {
     var preguntaIndex by remember { mutableStateOf(0) }
     var nivel by remember { mutableStateOf(0) }
 
@@ -44,6 +45,7 @@ fun CuestionarioRegistro() {
             )
         )
     )
+    val preguntaNivelIdioma = preguntaIndex == preguntas.lastIndex
 
     // Estado de selección por opción
     val respuestas = remember { mutableStateMapOf<Int, Set<String>>() }
@@ -92,14 +94,18 @@ fun CuestionarioRegistro() {
         // Botón de Siguiente
         Button(
             onClick = {
-                respuestas[preguntaIndex] = seleccionados
-                if (preguntaIndex < preguntas.lastIndex) {
+                if (preguntaNivelIdioma) {
+                    val opcion = seleccionados.firstOrNull()
+                    nivel = when (opcion) {
+                        "No sé nada" -> 1
+                        "Sé lo básico" -> 2
+                        "Sé bastante" -> 3
+                        else -> 0
+                    }
+                } else {
+                    respuestas[preguntaIndex] = seleccionados
                     preguntaIndex++
                     seleccionados = emptySet()
-                } else {
-                    // Aquí termina el cuestionario
-                    // Puedes navegar a otra pantalla o mostrar un mensaje
-                    println("Cuestionario terminado")
                 }
             },
             modifier = Modifier
@@ -111,7 +117,7 @@ fun CuestionarioRegistro() {
             ),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text(text = if (preguntaIndex < preguntas.lastIndex) "Siguiente" else "Finalizar")
+            Text(text = if (preguntaNivelIdioma) "Siguiente" else "Finalizar")
         }
     }
 }
