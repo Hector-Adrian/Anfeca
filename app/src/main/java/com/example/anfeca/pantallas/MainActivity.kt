@@ -5,14 +5,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
 import com.example.anfeca.ui.theme.AnfecaTheme
 
 import androidx.navigation.compose.NavHost
@@ -25,33 +30,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AnfecaTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-                //CameraPreview()
+                AppNavigation()
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AnfecaTheme {
-        Greeting("Android")
-    }
-}
 
 @Composable
 fun CameraPreview() {
@@ -75,9 +59,27 @@ fun CameraPreview() {
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "registro") {
+    NavHost(navController = navController, startDestination = "splash") {
+        composable("splash") { SplashScreen(navController) }
         composable("registro") { RegistroPantalla(navController) }
         composable("cuestionario_registro") { CuestionarioRegistro(navController) }
         composable("inicio_sesion") { InicioSesion(navController) }
+    }
+}
+
+@Composable
+fun SplashScreen(navController: NavHostController) {
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(3000) // Espera 3 segundos
+        navController.navigate("registro") {
+            popUpTo("splash") { inclusive = true } // Elimina esta pantalla del backstack
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Cargando...", color = Color.White)
     }
 }
