@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 
 @Composable
 fun InicioSesion(navController: NavController) {
+    AnfecaTheme{
     var paso by remember { mutableStateOf(0) }
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -150,4 +151,5 @@ fun InicioSesion(navController: NavController) {
             )
         }
     }
+}
 }
