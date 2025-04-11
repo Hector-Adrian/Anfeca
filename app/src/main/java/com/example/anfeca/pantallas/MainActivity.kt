@@ -18,7 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
-import com.example.anfeca.ui.theme.AnfecaTheme
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,9 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AnfecaTheme {
                 AppNavigation()
-            }
         }
     }
 }
@@ -64,6 +63,7 @@ fun AppNavigation() {
         composable("registro") { RegistroPantalla(navController) }
         composable("cuestionario_registro") { CuestionarioRegistro(navController) }
         composable("inicio_sesion") { InicioSesion(navController) }
+        composable("PantallaInicio") { PantallaInicio(navController) }
     }
 }
 

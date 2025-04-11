@@ -15,69 +15,86 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.anfeca.ui.theme.AnfecaTheme
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.anfeca.R
 
 @Composable
 fun CuestionarioRegistro(navController: NavController) {
-    AnfecaTheme{
-        var preguntaIndex by remember { mutableStateOf(0) }
-        var nivel by remember { mutableStateOf(0) }
+    var preguntaIndex by remember { mutableStateOf(0) }
+    var nivel by remember { mutableStateOf(0) }
 
-        //Preguntas
-        val preguntas = listOf(
-            Pregunta(
-                titulo = "¿Por qué quieres aprender lengua de señas?",
-                subtitulo = "Elige las razones que apliquen",
-                opciones = listOf(
-                    "Por curiosidad", "Comunicación con mi pareja", "Negocios",
-                    "Familiares o amistades", "Viajes", "Escuela", "Otra"
-                )
-            ),
-            Pregunta(
-                titulo = "¿Dónde planeas usarla más?",
-                subtitulo = "Selecciona tus entornos principales",
-                opciones = listOf("Trabajo", "Casa", "Escuela", "Eventos sociales", "Otro")
-            ),
-            Pregunta(
-                titulo = "¿Qué te gustaría ser capaz de hacer en lengua de señas?",
-                subtitulo = "Elige tus objetivos",
-                opciones = listOf(
-                    "Saber más sobre las señas", "Mantener conversaciones",
-                    "Comprender a la gente", "Adaptarme a situaciones", "Otro"
-                )
+    // Selección múltiple (por índice)
+    val respuestas = remember { mutableStateMapOf<Int, Set<String>>() }
+    var seleccionados by remember { mutableStateOf(setOf<String>()) }
+
+    // Selección única (nivel)
+    var nivelSeleccionado by remember { mutableStateOf("") }
+
+    val preguntas = listOf(
+        Pregunta(
+            titulo = "¿Por qué quieres aprender lengua de señas?",
+            subtitulo = "Elige las razones que apliquen",
+            opciones = listOf(
+                "Por curiosidad", "Comunicación con mi pareja", "Negocios",
+                "Familiares o amistades", "Viajes", "Escuela", "Otra"
+            )
+        ),
+        Pregunta(
+            titulo = "¿Dónde planeas usarla más?",
+            subtitulo = "Selecciona tus entornos principales",
+            opciones = listOf("Trabajo", "Casa", "Escuela", "Eventos sociales", "Otro")
+        ),
+        Pregunta(
+            titulo = "¿Qué te gustaría ser capaz de hacer en lengua de señas?",
+            subtitulo = "Elige tus objetivos",
+            opciones = listOf(
+                "Saber más sobre las señas", "Mantener conversaciones",
+                "Comprender a la gente", "Adaptarme a situaciones", "Otro"
             )
         )
-        val preguntaNivelIdioma = preguntaIndex == preguntas.lastIndex
+    )
 
-        // Estado de selección por opción
-        val respuestas = remember { mutableStateMapOf<Int, Set<String>>() }
-        var seleccionados by remember { mutableStateOf(setOf<String>()) }
+    val esUltimaPregunta = preguntaIndex == preguntas.size
 
-        val preguntaActual = preguntas[preguntaIndex]
+    val preguntaActual = if (!esUltimaPregunta) preguntas[preguntaIndex] else
+        Pregunta(
+            titulo = "¿Cuál es tu nivel de lengua de señas?",
+            subtitulo = "Selecciona solo una opción",
+            opciones = listOf("No sé nada", "Sé lo básico", "Sé bastante")
+        )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFF1E1E1E))
-                .padding(24.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(
-                    text = preguntaActual.titulo,
-                    fontSize = 20.sp,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = preguntaActual.subtitulo,
-                    fontSize = 14.sp,
-                    color = Color.LightGray
-                )
+    Image(
+        painter = painterResource(id = R.drawable.registro_se),
+        contentDescription = null,
+        contentScale = ContentScale.Crop, // Ajusta según tu diseño
+        modifier = Modifier.fillMaxSize()
+    )
 
-                Spacer(modifier = Modifier.height(24.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF1E1E1E))
+            .padding(24.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(
+                text = preguntaActual.titulo,
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = preguntaActual.subtitulo,
+                fontSize = 14.sp,
+                color = Color.LightGray
+            )
+            Spacer(modifier = Modifier.height(24.dp))
 
-                preguntaActual.opciones.forEach { opcion ->
+            preguntaActual.opciones.forEach { opcion ->
+                if (!esUltimaPregunta) {
                     OpcionCheck(
                         texto = opcion,
                         seleccionado = seleccionados.contains(opcion),
@@ -89,38 +106,44 @@ fun CuestionarioRegistro(navController: NavController) {
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                } else {
+                    OpcionRadio(
+                        texto = opcion,
+                        seleccionado = nivelSeleccionado == opcion,
+                        onClick = { nivelSeleccionado = opcion }
+                    )
                 }
+                Spacer(modifier = Modifier.height(12.dp))
             }
+        }
 
-            // Botón de Siguiente
-            Button(
-                onClick = {
-                    if (preguntaNivelIdioma) {
-                        val opcion = seleccionados.firstOrNull()
-                        nivel = when (opcion) {
-                            "No sé nada" -> 1
-                            "Sé lo básico" -> 2
-                            "Sé bastante" -> 3
-                            else -> 0
-                        }
-                    } else {
-                        respuestas[preguntaIndex] = seleccionados
-                        preguntaIndex++
-                        seleccionados = emptySet()
+        Button(
+            onClick = {
+                if (!esUltimaPregunta) {
+                    respuestas[preguntaIndex] = seleccionados
+                    preguntaIndex++
+                    seleccionados = emptySet()
+                } else {
+                    nivel = when (nivelSeleccionado) {
+                        "No sé nada" -> 1
+                        "Sé lo básico" -> 2
+                        "Sé bastante" -> 3
+                        else -> 0
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF8000),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(text = if (preguntaNivelIdioma) "Siguiente" else "Finalizar")
-            }
+                    // Aquí podrías guardar los datos si lo necesitas
+                    navController.navigate("pantallaInicio") // <- Cambia esto si tienes otro nombre de ruta
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFF8000),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(text = if (esUltimaPregunta) "Finalizar" else "Siguiente")
         }
     }
 }
@@ -152,8 +175,31 @@ fun OpcionCheck(texto: String, seleccionado: Boolean, onClick: () -> Unit) {
     }
 }
 
+@Composable
+fun OpcionRadio(texto: String, seleccionado: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = seleccionado,
+            onClick = onClick,
+            colors = RadioButtonDefaults.colors(
+                selectedColor = Color(0xFFFF8000),
+                unselectedColor = Color.White
+            )
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = texto, color = Color.White)
+    }
+}
+
 data class Pregunta(
     val titulo: String,
     val subtitulo: String,
     val opciones: List<String>
 )
+

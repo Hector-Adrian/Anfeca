@@ -19,17 +19,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.anfeca.ui.theme.AnfecaTheme
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.layout.ContentScale
+import com.example.anfeca.R
 
 
 @Composable
 fun InicioSesion(navController: NavController) {
-    AnfecaTheme{
     var paso by remember { mutableStateOf(0) }
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    Image(
+        painter = painterResource(id = R.drawable.registro_se),
+        contentDescription = null,
+        contentScale = ContentScale.Crop, // Ajusta según tu diseño
+        modifier = Modifier.fillMaxSize()
+    )
 
     val titulo = when (paso) {
         0 -> "¿Cómo te llamas?"
@@ -118,7 +126,7 @@ fun InicioSesion(navController: NavController) {
                     paso++
                 } else {
                     // Ir al menú principal
-                    navController.navigate("menu_principal")
+                    navController.navigate("PantallaInicio")
                 }
             },
             modifier = Modifier
@@ -151,5 +159,4 @@ fun InicioSesion(navController: NavController) {
             )
         }
     }
-}
 }

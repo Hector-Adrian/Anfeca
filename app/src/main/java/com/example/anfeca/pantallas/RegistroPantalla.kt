@@ -12,11 +12,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.anfeca.ui.theme.AnfecaTheme
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import com.example.anfeca.R
 
 @Composable
 fun RegistroPantalla(navController: NavController) {
-    AnfecaTheme{
+    Image(
+        painter = painterResource(id = R.drawable.registro_se),
+        contentDescription = null,
+        contentScale = ContentScale.Crop, // Ajusta según tu diseño
+        modifier = Modifier.fillMaxSize()
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -51,6 +59,7 @@ fun RegistroPantalla(navController: NavController) {
                 color = Color.LightGray,
                 textAlign = TextAlign.Center
             )
+
         }
 
         Column(
@@ -84,6 +93,5 @@ fun RegistroPantalla(navController: NavController) {
             }
         }
     }
-}
 }
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "666045265921",
+    "project_id": "anfeca-lenguaje",
+    "storage_bucket": "anfeca-lenguaje.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:666045265921:android:466d52cdd3e3fd3219e800",
+        "android_client_info": {
+          "package_name": "com.example.anfeca"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDelXt758EMNVQ8Q5_vtReyOBaCgWi0CU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
