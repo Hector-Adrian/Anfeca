@@ -131,7 +131,7 @@ fun CuestionarioRegistro(navController: NavController) {
                         else -> 0
                     }
                     // Aquí podrías guardar los datos si lo necesitas
-                    navController.navigate("pantallaInicio") // <- Cambia esto si tienes otro nombre de ruta
+                    navController.navigate("RegistroDatosUsuario")
                 }
             },
             modifier = Modifier

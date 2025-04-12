@@ -66,6 +66,7 @@ fun AppNavigation() {
         composable("cuestionario_registro") { CuestionarioRegistro(navController) }
         composable("inicio_sesion") { InicioSesion(navController) }
         composable("PantallaInicio") { PantallaInicio(navController) }
+        composable("RegistroDatosUsuario") { RegistroDatosUsuario(navController) }
     }
 }
 
