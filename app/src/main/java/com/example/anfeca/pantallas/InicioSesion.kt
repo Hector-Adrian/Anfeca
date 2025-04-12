@@ -1,6 +1,5 @@
 package com.example.anfeca.pantallas
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -12,9 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,43 +21,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.layout.ContentScale
 import com.example.anfeca.R
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
+
 
 
 @Composable
 fun InicioSesion(navController: NavController) {
-    var paso by remember { mutableStateOf(0) }
-    var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
     Image(
         painter = painterResource(id = R.drawable.registro_se),
         contentDescription = null,
-        contentScale = ContentScale.Crop, // Ajusta según tu diseño
+        contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize()
     )
-
-    val titulo = when (paso) {
-        0 -> "¿Cómo te llamas?"
-        1 -> "Inicia sesión"
-        2 -> "Inicia sesión\n$email"
-        else -> ""
-    }
-
-    val placeholder = when (paso) {
-        0 -> "Nombre"
-        1 -> "Dirección de email"
-        2 -> "Contraseña"
-        else -> ""
-    }
-
-    val icono = when (paso) {
-        0 -> Icons.Default.Person
-        1 -> Icons.Default.Email
-        2 -> Icons.Default.Lock
-        else -> Icons.Default.Person
-    }
-
-    val textoBoton = if (paso < 2) "Continuar" else "Iniciar sesión"
 
     Column(
         modifier = Modifier
@@ -70,7 +48,7 @@ fun InicioSesion(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = titulo,
+            text = "Inicia sesión",
             style = MaterialTheme.typography.headlineSmall,
             color = Color.White,
             textAlign = TextAlign.Center,
@@ -80,53 +58,67 @@ fun InicioSesion(navController: NavController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         OutlinedTextField(
-            value = when (paso) {
-                0 -> nombre
-                1 -> email
-                2 -> password
-                else -> ""
-            },
-            onValueChange = {
-                when (paso) {
-                    0 -> nombre = it
-                    1 -> email = it
-                    2 -> password = it
-                }
-            },
+            value = email,
+            onValueChange = { email = it },
             leadingIcon = {
-                Icon(imageVector = icono, contentDescription = null, tint = Color.White)
+                Icon(imageVector = Icons.Default.Email, contentDescription = null, tint = Color.White)
             },
-            placeholder = { Text(placeholder, color = Color.White) },
-            visualTransformation = if (paso == 2) PasswordVisualTransformation() else VisualTransformation.None,
-            colors = TextFieldDefaults.colors(
-                Color.White,
-                Color.White,
-                Color(0xFFFF8000),
-                Color.White
+            placeholder = { Text("Correo electrónico", color = Color.White) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFFF8000),
+                unfocusedBorderColor = Color.White,
+                focusedLabelColor = Color(0xFFFF8000),
+                unfocusedLabelColor = Color.White,
+                cursorColor = Color.White,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
             ),
             modifier = Modifier.fillMaxWidth()
         )
 
-        if (paso == 2) {
-            Text(
-                text = "¿Olvidaste tu contraseña?",
-                color = Color.White,
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(top = 8.dp)
-            )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = Color.White)
+            },
+            placeholder = { Text("Contraseña", color = Color.White) },
+            visualTransformation = PasswordVisualTransformation(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFFF8000),
+                unfocusedBorderColor = Color.White,
+                focusedLabelColor = Color(0xFFFF8000),
+                unfocusedLabelColor = Color.White,
+                cursorColor = Color.White,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        errorMessage?.let {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = it, color = Color.Red, fontSize = 14.sp)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                if (paso < 2) {
-                    paso++
+                if (email.isNotBlank() && password.isNotBlank()) {
+                    FirebaseAuth.getInstance()
+                        .signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                navController.navigate("PantallaInicio")
+                            } else {
+                                errorMessage = "Correo o contraseña incorrectos."
+                            }
+                        }
                 } else {
-                    // Ir al menú principal
-                    navController.navigate("PantallaInicio")
+                    errorMessage = "Por favor completa los campos."
                 }
             },
             modifier = Modifier
@@ -138,25 +130,8 @@ fun InicioSesion(navController: NavController) {
             ),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text(textoBoton)
-        }
-
-        if (paso == 0) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Ya tienes una cuenta? ",
-                color = Color.White,
-                fontSize = 14.sp
-            )
-            Text(
-                text = "Iniciar sesión",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                modifier = Modifier.clickable {
-                    // Acción opcional
-                }
-            )
+            Text("Iniciar sesión")
         }
     }
 }
+
