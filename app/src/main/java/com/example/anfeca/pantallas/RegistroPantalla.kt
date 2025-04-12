@@ -22,7 +22,7 @@ fun RegistroPantalla(navController: NavController) {
     Image(
         painter = painterResource(id = R.drawable.registro_se),
         contentDescription = null,
-        contentScale = ContentScale.Crop, // Ajusta según tu diseño
+        contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize()
     )
     Column(
