@@ -20,6 +20,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import com.google.firebase.FirebaseApp
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
         setContent {
                 AppNavigation()
