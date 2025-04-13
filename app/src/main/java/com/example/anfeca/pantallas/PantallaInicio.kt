@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -60,12 +61,30 @@ fun PantallaInicio(navController: NavController) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = "¡Bienvenido!",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White,
-            modifier = Modifier.padding(19.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "¡Bienvenido!",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.White
+            )
+
+            IconButton(onClick = {
+                navController.navigate("PerfilUsuario")
+            }) {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Perfil de usuario",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
         ListaLecciones(lecciones = lecciones, navController = navController)
     }
 }

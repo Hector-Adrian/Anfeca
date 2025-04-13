@@ -7,19 +7,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavType
 import com.google.firebase.FirebaseApp
 
@@ -77,6 +73,7 @@ fun AppNavigation() {
             LeccionPantalla(leccionId = leccionId, navController = navController)
         }
         composable("RecuperacionContrasena") { RecuperacionContrasena(navController)  }
+        composable("PerfilUsuario"){ PerfilUsuario(navController)}
 
     }
 }
@@ -84,9 +81,19 @@ fun AppNavigation() {
 @Composable
 fun SplashScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(3000) // Espera 3 segundos
-        navController.navigate("registro") {
-            popUpTo("splash") { inclusive = true } // Elimina esta pantalla del backstack
+        kotlinx.coroutines.delay(2000) // Espera 2 segundos
+
+        val usuario = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        if (usuario != null) {
+            // Usuario ya autenticado, va directo a la pantalla principal
+            navController.navigate("PantallaInicio") {
+                popUpTo("splash") { inclusive = true }
+            }
+        } else {
+            // Usuario no autenticado, redirige a inicio de sesión
+            navController.navigate("registro") {
+                popUpTo("splash") { inclusive = true }
+            }
         }
     }
 
