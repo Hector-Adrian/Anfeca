@@ -76,7 +76,7 @@ fun AppNavigation() {
             val leccionId = backStackEntry.arguments?.getString("leccionId") ?: ""
             LeccionPantalla(leccionId = leccionId, navController = navController)
         }
-
+        composable("RecuperacionContrasena") { RecuperacionContrasena(navController)  }
 
     }
 }

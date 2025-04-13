@@ -125,12 +125,22 @@ fun InicioSesion(navController: NavController) {
                 .fillMaxWidth()
                 .height(48.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFF8000),
-                contentColor = Color.White
+                containerColor = Color(0xFFFF8000),  // Fondo naranja
+                contentColor = Color.White           // Texto blanco
             ),
             shape = RoundedCornerShape(8.dp)
         ) {
             Text("Iniciar sesión")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(onClick = { navController.navigate("RecuperacionContrasena") }) {
+            Text(
+                text = "¿Olvidaste tu contraseña?",
+                color = Color.White,
+                fontSize = 14.sp
+            )
         }
     }
 }
