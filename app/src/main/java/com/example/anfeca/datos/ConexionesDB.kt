@@ -1,49 +1,50 @@
 package com.example.anfeca.datos
 
+import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 
 val db = FirebaseFirestore.getInstance()
 
 // Crear un nuevo usuario
-fun crearUsuario(nombre: String, email: String){
+fun crearUsuario(nombre: String, email: String) {
     val user = hashMapOf(
-    "name" to nombre,
-    "email" to email
-)
+        "name" to nombre,
+        "email" to email
+    )
 
-    db.collection("users")
-        .add(user)
-        .addOnSuccessListener { documentReference ->
-            println("DocumentSnapshot added with ID: ${documentReference.id}")
-            // Después de crear el usuario, crea la subcolección "progress"
-            createProgressSubcollection(documentReference.id)
+    // Guardamos al usuario con su nombre como ID del documento
+    db.collection("Usuarios")
+        .document(nombre)
+        .set(user)
+        .addOnSuccessListener {
+            createProgressSubcollection(nombre)
         }
         .addOnFailureListener { e ->
-            println("Error adding document ${e}")
         }
 }
+
 
 
 
 // Función para crear la subcolección "progress" para un usuario
-fun createProgressSubcollection(userId: String) {
-    val progress = hashMapOf(
-        "completed" to false,
-        "score" to 0
+fun createProgressSubcollection(nombreUsuario: String) {
+    val progreso = hashMapOf(
+        "Leccion1" to false,
+        "Leccion2" to false,
+        "Leccion3" to false
     )
 
-    db.collection("users")
-        .document(userId)
-        .collection("progress")
-        .document("lesson1") // Puedes usar el ID de la lección aquí
-        .set(progress)
+    db.collection("Usuarios")
+        .document(nombreUsuario)
+        .collection("Progreso")
+        .document("Curso1")
+        .set(progreso)
         .addOnSuccessListener {
-            println("Subcolección 'progress' creada para el usuario ${userId}")
         }
         .addOnFailureListener { e ->
-            println("Error al crear la subcolección 'progress' ${e}")
         }
 }
+
 
 // Crear un nuevo curso
 fun crearCurso(nombre: String, descripcion: String){

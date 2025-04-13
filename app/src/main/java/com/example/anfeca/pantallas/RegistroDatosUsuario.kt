@@ -74,6 +74,7 @@ fun RegistroDatosUsuario(navController: NavController) {
                                     "correo" to correo
                                 )
 
+
                                 db.collection("Usuarios").document(userId!!)
                                     .set(datosUsuario)
                                     .addOnSuccessListener {
@@ -88,6 +89,7 @@ fun RegistroDatosUsuario(navController: NavController) {
                                 Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                             }
                         }
+                        crearUsuario(nombre,correo)
                 } else {
                     Toast.makeText(context, "Completa todos los campos y usa contraseña de al menos 6 caracteres", Toast.LENGTH_SHORT).show()
                 }
