@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.anfeca.R
+import com.example.anfeca.datos.crearProgresoUsuario
 import com.example.anfeca.datos.crearUsuario
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -90,6 +91,7 @@ fun RegistroDatosUsuario(navController: NavController) {
                             }
                         }
                         crearUsuario(nombre,correo)
+                        crearProgresoUsuario(nombre)
                 } else {
                     Toast.makeText(context, "Completa todos los campos y usa contraseña de al menos 6 caracteres", Toast.LENGTH_SHORT).show()
                 }

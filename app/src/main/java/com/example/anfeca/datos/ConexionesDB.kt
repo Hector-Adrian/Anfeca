@@ -17,7 +17,7 @@ fun crearUsuario(nombre: String, email: String) {
         .document(nombre)
         .set(user)
         .addOnSuccessListener {
-            createProgressSubcollection(nombre)
+            crearProgresoUsuario(nombre)
         }
         .addOnFailureListener { e ->
         }
@@ -27,7 +27,7 @@ fun crearUsuario(nombre: String, email: String) {
 
 
 // Función para crear la subcolección "progress" para un usuario
-fun createProgressSubcollection(nombreUsuario: String) {
+fun crearProgresoUsuario(nombreUsuario: String) {
     val progreso = hashMapOf(
         "Leccion1" to false,
         "Leccion2" to false,
