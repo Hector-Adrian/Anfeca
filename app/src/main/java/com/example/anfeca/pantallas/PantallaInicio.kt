@@ -8,27 +8,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.Image
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.anfeca.R
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
+data class Leccion(
+    val id: String = "",
+    val titulo: String = "",
+    val curso: String = "",
+    val completada: Boolean = false
+)
 
 @Composable
 fun PantallaInicio(navController: NavController) {
@@ -39,11 +37,27 @@ fun PantallaInicio(navController: NavController) {
         modifier = Modifier.fillMaxSize()
     )
 
-    val lecciones = listOf(
-        Leccion("Fundamentos", "Curso 1", completada = true),
-        Leccion("Abecedario", "Curso 1", completada = false),
-        Leccion("Saludos", "Curso 1", completada = false)
-    )
+    val db = FirebaseFirestore.getInstance()
+    var lecciones by remember { mutableStateOf<List<Leccion>>(emptyList()) }
+
+    // Cargar lecciones desde Firestore
+    LaunchedEffect(Unit) {
+        db.collection("LeccionesCurso1")
+            .get()
+            .addOnSuccessListener { result ->
+                lecciones = result.map { document ->
+                    Leccion(
+                        id = document.id,
+                        titulo = document.getString("titulo") ?: "",
+                        curso = document.getString("curso") ?: "",
+                        completada = false // Puedes mejorar esto con el progreso real del usuario
+                    )
+                }
+            }
+            .addOnFailureListener {
+                // Manejar errores si quieres
+            }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
@@ -55,15 +69,6 @@ fun PantallaInicio(navController: NavController) {
         ListaLecciones(lecciones = lecciones, navController = navController)
     }
 }
-
-
-
-
-data class Leccion(
-    val titulo: String,
-    val curso: String,
-    val completada: Boolean
-)
 
 @Composable
 fun ListaLecciones(lecciones: List<Leccion>, navController: NavController) {
@@ -77,22 +82,18 @@ fun ListaLecciones(lecciones: List<Leccion>, navController: NavController) {
     }
 }
 
-
-
 @Composable
 fun TarjetaLeccion(leccion: Leccion, navController: NavController) {
     Card(
         onClick = {
-            navController.navigate("Leccion/${leccion.titulo}")
+            navController.navigate("Leccion/${leccion.id}")
         },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFDE7B0))
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "A continuación",
                 color = Color(0xFF1B3A4B),
@@ -104,7 +105,6 @@ fun TarjetaLeccion(leccion: Leccion, navController: NavController) {
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(8.dp))
-
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -138,5 +138,3 @@ fun TarjetaLeccion(leccion: Leccion, navController: NavController) {
         }
     }
 }
-
-

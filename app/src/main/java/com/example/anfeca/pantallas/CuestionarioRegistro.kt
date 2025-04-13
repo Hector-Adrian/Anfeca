@@ -32,8 +32,8 @@ fun CuestionarioRegistro(navController: NavController) {
     // Selección única (nivel)
     var nivelSeleccionado by remember { mutableStateOf("") }
 
-    val preguntas = listOf(
-        Pregunta(
+    val preguntaCuestionarios = listOf(
+        PreguntaCuestionario(
             titulo = "¿Por qué quieres aprender lengua de señas?",
             subtitulo = "Elige las razones que apliquen",
             opciones = listOf(
@@ -41,12 +41,12 @@ fun CuestionarioRegistro(navController: NavController) {
                 "Familiares o amistades", "Viajes", "Escuela", "Otra"
             )
         ),
-        Pregunta(
+        PreguntaCuestionario(
             titulo = "¿Dónde planeas usarla más?",
             subtitulo = "Selecciona tus entornos principales",
             opciones = listOf("Trabajo", "Casa", "Escuela", "Eventos sociales", "Otro")
         ),
-        Pregunta(
+        PreguntaCuestionario(
             titulo = "¿Qué te gustaría ser capaz de hacer en lengua de señas?",
             subtitulo = "Elige tus objetivos",
             opciones = listOf(
@@ -56,10 +56,10 @@ fun CuestionarioRegistro(navController: NavController) {
         )
     )
 
-    val esUltimaPregunta = preguntaIndex == preguntas.size
+    val esUltimaPregunta = preguntaIndex == preguntaCuestionarios.size
 
-    val preguntaActual = if (!esUltimaPregunta) preguntas[preguntaIndex] else
-        Pregunta(
+    val preguntaCuestionarioActual = if (!esUltimaPregunta) preguntaCuestionarios[preguntaIndex] else
+        PreguntaCuestionario(
             titulo = "¿Cuál es tu nivel de lengua de señas?",
             subtitulo = "Selecciona solo una opción",
             opciones = listOf("No sé nada", "Sé lo básico", "Sé bastante")
@@ -81,19 +81,19 @@ fun CuestionarioRegistro(navController: NavController) {
     ) {
         Column {
             Text(
-                text = preguntaActual.titulo,
+                text = preguntaCuestionarioActual.titulo,
                 fontSize = 20.sp,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = preguntaActual.subtitulo,
+                text = preguntaCuestionarioActual.subtitulo,
                 fontSize = 14.sp,
                 color = Color.LightGray
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            preguntaActual.opciones.forEach { opcion ->
+            preguntaCuestionarioActual.opciones.forEach { opcion ->
                 if (!esUltimaPregunta) {
                     OpcionCheck(
                         texto = opcion,
@@ -197,7 +197,7 @@ fun OpcionRadio(texto: String, seleccionado: Boolean, onClick: () -> Unit) {
     }
 }
 
-data class Pregunta(
+data class PreguntaCuestionario(
     val titulo: String,
     val subtitulo: String,
     val opciones: List<String>

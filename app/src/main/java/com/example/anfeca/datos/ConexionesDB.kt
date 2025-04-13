@@ -2,6 +2,7 @@ package com.example.anfeca.datos
 
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
+import android.util.Log
 
 val db = FirebaseFirestore.getInstance()
 
@@ -80,3 +81,7 @@ fun crearLeccion(courseId: String, titulo: String, contenido: String){
             println("Error al crear la lección ${e}")
         }
 }
+
+
+
+

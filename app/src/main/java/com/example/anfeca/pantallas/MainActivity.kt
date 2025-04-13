@@ -20,11 +20,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavType
 import com.google.firebase.FirebaseApp
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +69,15 @@ fun AppNavigation() {
         composable("inicio_sesion") { InicioSesion(navController) }
         composable("PantallaInicio") { PantallaInicio(navController) }
         composable("RegistroDatosUsuario") { RegistroDatosUsuario(navController) }
+        composable(
+            route = "Leccion/{leccionId}",
+            arguments = listOf(navArgument("leccionId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val leccionId = backStackEntry.arguments?.getString("leccionId") ?: ""
+            LeccionPantalla(leccionId = leccionId, navController = navController)
+        }
+
+
     }
 }
 
