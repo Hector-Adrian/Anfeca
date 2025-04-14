@@ -1,34 +1,36 @@
 package com.example.anfeca.datos
 
-import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
-import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 
 val db = FirebaseFirestore.getInstance()
 
 // Crear un nuevo usuario
 fun crearUsuario(nombre: String, email: String) {
+    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
     val user = hashMapOf(
         "name" to nombre,
         "email" to email
     )
 
-    // Guardamos al usuario con su nombre como ID del documento
     db.collection("Usuarios")
-        .document(nombre)
+        .document(uid)
         .set(user)
         .addOnSuccessListener {
-            crearProgresoUsuario(nombre)
+            crearProgresoUsuario(uid)
         }
         .addOnFailureListener { e ->
+            // Mensaje de error
         }
 }
 
 
 
 
+
 // Función para crear la subcolección "progress" para un usuario
-fun crearProgresoUsuario(nombreUsuario: String) {
+fun crearProgresoUsuario(uid: String) {
     val progreso = hashMapOf(
         "Leccion1" to false,
         "Leccion2" to false,
@@ -36,15 +38,12 @@ fun crearProgresoUsuario(nombreUsuario: String) {
     )
 
     db.collection("Usuarios")
-        .document(nombreUsuario)
+        .document(uid)
         .collection("Progreso")
         .document("Curso1")
         .set(progreso)
-        .addOnSuccessListener {
-        }
-        .addOnFailureListener { e ->
-        }
 }
+
 
 
 // Crear un nuevo curso

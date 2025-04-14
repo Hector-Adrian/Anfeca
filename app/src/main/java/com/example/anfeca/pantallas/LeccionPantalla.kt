@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.anfeca.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
@@ -32,7 +34,7 @@ data class PreguntaLeccion(
 )
 
 @Composable
-fun LeccionPantalla(navController: NavController, leccionId: String) {
+fun LeccionPantalla(navController: NavController, leccionId: String, cursoId: String) {
 
     val db = Firebase.firestore
     var preguntasLeccion by remember { mutableStateOf<List<PreguntaLeccion>>(emptyList()) }
@@ -51,7 +53,7 @@ fun LeccionPantalla(navController: NavController, leccionId: String) {
     LaunchedEffect(Unit) {
         db.collection("LeccionesCurso1")
             .document(leccionId)
-            .collection("PreguntasLeccion1") // <- subcolección
+            .collection("Preguntas${leccionId}") // <- subcolección
             .get()
             .addOnSuccessListener { result ->
                 preguntasLeccion = result.documents.mapNotNull { doc ->
@@ -83,6 +85,10 @@ fun LeccionPantalla(navController: NavController, leccionId: String) {
 
     if (preguntaActualIndex >= preguntasLeccion.size) {
         // Final de la lección con botón para regresar
+        val auth = FirebaseAuth.getInstance()
+        val db = Firebase.firestore
+        val userEmail = auth.currentUser?.email
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,8 +107,32 @@ fun LeccionPantalla(navController: NavController, leccionId: String) {
 
                 Button(
                     onClick = {
-                        navController.navigate("PantallaInicio") {
-                            popUpTo("PantallaInicio") { inclusive = true }
+                        if (userEmail != null) {
+                            // 1. Buscar el nombre de usuario en Firestore usando el email
+                            db.collection("Usuarios")
+                                .whereEqualTo("email", userEmail)
+                                .get()
+                                .addOnSuccessListener { querySnapshot ->
+                                    val userDoc = querySnapshot.documents.firstOrNull()
+                                    val nombreUsuario = userDoc?.id
+                                    if (nombreUsuario != null) {
+                                        // 2. Actualizar el progreso
+                                        db.collection("Usuarios")
+                                            .document(nombreUsuario)
+                                            .collection("Progreso")
+                                            .document("Curso1")
+                                            .update(leccionId, true)
+                                            .addOnSuccessListener {
+                                                navController.navigate("PantallaInicio") {
+                                                    popUpTo("PantallaInicio") { inclusive = true }
+                                                }
+                                            }
+                                    }
+                                }
+                        } else {
+                            navController.navigate("PantallaInicio") {
+                                popUpTo("PantallaInicio") { inclusive = true }
+                            }
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
@@ -113,6 +143,7 @@ fun LeccionPantalla(navController: NavController, leccionId: String) {
         }
         return
     }
+
 
 
 
@@ -131,7 +162,7 @@ fun LeccionPantalla(navController: NavController, leccionId: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Atrás", tint = Color.White)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás", tint = Color.White)
             }
             Text("Lección ${leccionId.takeLast(1)}", color = Color.White)
         }

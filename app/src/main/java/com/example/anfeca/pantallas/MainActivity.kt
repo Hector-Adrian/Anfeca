@@ -70,7 +70,15 @@ fun AppNavigation() {
             arguments = listOf(navArgument("leccionId") { type = NavType.StringType })
         ) { backStackEntry ->
             val leccionId = backStackEntry.arguments?.getString("leccionId") ?: ""
-            LeccionPantalla(leccionId = leccionId, navController = navController)
+            val cursoId = navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<String>("cursoId") ?: ""
+
+            LeccionPantalla(
+                leccionId = leccionId,
+                cursoId = cursoId,
+                navController = navController
+            )
         }
         composable("RecuperacionContrasena") { RecuperacionContrasena(navController)  }
         composable("PerfilUsuario"){ PerfilUsuario(navController)}

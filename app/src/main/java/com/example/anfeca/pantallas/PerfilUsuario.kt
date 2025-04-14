@@ -25,7 +25,12 @@ fun PerfilUsuario(navController: NavController) {
 
     var nombre by remember { mutableStateOf("Cargando...") }
 
-    // Obtener nombre desde Firestore por correo
+    Image(
+        painter = painterResource(id = R.drawable.registro_se),
+        contentDescription = null,
+        contentScale = ContentScale.Crop, // Ajusta según tu diseño
+        modifier = Modifier.fillMaxSize()
+    )
     LaunchedEffect(user) {
         user?.email?.let { correo ->
             db.collection("Usuarios")

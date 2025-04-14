@@ -20,7 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.anfeca.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 data class Leccion(
     val id: String = "",
@@ -43,22 +45,24 @@ fun PantallaInicio(navController: NavController) {
 
     // Cargar lecciones desde Firestore
     LaunchedEffect(Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val completadas = obtenerLeccionesCompletadas(lecciones)
+
         db.collection("LeccionesCurso1")
             .get()
             .addOnSuccessListener { result ->
                 lecciones = result.map { document ->
+                    val id = document.id
                     Leccion(
-                        id = document.id,
+                        id = id,
                         titulo = document.getString("titulo") ?: "",
                         curso = document.getString("curso") ?: "",
-                        completada = false // Puedes mejorar esto con el progreso real del usuario
+                        completada = id in completadas
                     )
                 }
             }
-            .addOnFailureListener {
-                // Manejar errores si quieres
-            }
     }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -105,13 +109,15 @@ fun ListaLecciones(lecciones: List<Leccion>, navController: NavController) {
 fun TarjetaLeccion(leccion: Leccion, navController: NavController) {
     Card(
         onClick = {
+            navController.currentBackStackEntry?.savedStateHandle?.set(leccion.curso, leccion.curso)
             navController.navigate("Leccion/${leccion.id}")
         },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFDE7B0))
-    ) {
+    )
+    {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "A continuación",
@@ -137,7 +143,7 @@ fun TarjetaLeccion(leccion: Leccion, navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
-                        Text("Lección 1")
+                        Text(leccion.id)
                         Text(
                             leccion.titulo,
                             fontWeight = FontWeight.Bold
@@ -157,3 +163,41 @@ fun TarjetaLeccion(leccion: Leccion, navController: NavController) {
         }
     }
 }
+
+suspend fun obtenerLeccionesCompletadas(leccion: List<Leccion>): Set<String> {
+    val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
+    val userEmail = auth.currentUser?.email ?: return emptySet()
+
+    return suspendCancellableCoroutine { continuation ->
+        db.collection("Usuarios")
+            .whereEqualTo("email", userEmail)
+            .get()
+            .addOnSuccessListener { userQuery ->
+                val userDoc = userQuery.documents.firstOrNull()
+                val nombreUsuario = userDoc?.id
+
+                if (nombreUsuario != null) {
+                    db.collection("Usuarios")
+                        .document(nombreUsuario)
+                        .collection("Progreso")
+                        .document("Curso1")
+                        .get()
+                        .addOnSuccessListener { progresoDoc ->
+                            val progreso = progresoDoc.data ?: emptyMap()
+                            val completadas = progreso.filterValues { it == true }.keys
+                            continuation.resume(completadas.toSet(), null)
+                        }
+                        .addOnFailureListener {
+                            continuation.resume(emptySet(), null)
+                        }
+                } else {
+                    continuation.resume(emptySet(), null)
+                }
+            }
+            .addOnFailureListener {
+                continuation.resume(emptySet(), null)
+            }
+    }
+}
+

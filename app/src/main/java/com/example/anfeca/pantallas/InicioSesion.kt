@@ -142,6 +142,13 @@ fun InicioSesion(navController: NavController) {
                 fontSize = 14.sp
             )
         }
+        TextButton(onClick = { navController.navigate("registro") }) {
+            Text(
+                text = "¿Aún no estas registrado?",
+                color = Color(0xFFFF8000),
+                fontSize = 14.sp
+            )
+        }
     }
 }
 
