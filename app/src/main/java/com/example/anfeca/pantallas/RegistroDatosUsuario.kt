@@ -85,15 +85,14 @@ fun RegistroDatosUsuario(navController: NavController) {
                                     .addOnFailureListener { e ->
                                         Toast.makeText(context, "Error al guardar usuario: ${e.message}", Toast.LENGTH_SHORT).show()
                                     }
-
+                                    crearUsuario(nombre,correo)
+                                    crearProgresoUsuario(userId)
                             } else {
                                 Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                             }
                         }
-                        val user = FirebaseAuth.getInstance().currentUser
-                        val userId = user?.uid
-                        crearUsuario(nombre,correo)
-                        crearProgresoUsuario(userId.toString())
+
+
                 } else {
                     Toast.makeText(context, "Completa todos los campos y usa contraseña de al menos 6 caracteres", Toast.LENGTH_SHORT).show()
                 }
