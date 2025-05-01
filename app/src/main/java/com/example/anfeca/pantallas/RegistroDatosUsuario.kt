@@ -71,8 +71,8 @@ fun RegistroDatosUsuario(navController: NavController) {
 
                                 val db = Firebase.firestore
                                 val datosUsuario = hashMapOf(
-                                    "nombre" to nombre,
-                                    "correo" to correo
+                                    "name" to nombre,
+                                    "email" to correo
                                 )
 
 
@@ -85,7 +85,6 @@ fun RegistroDatosUsuario(navController: NavController) {
                                     .addOnFailureListener { e ->
                                         Toast.makeText(context, "Error al guardar usuario: ${e.message}", Toast.LENGTH_SHORT).show()
                                     }
-                                    crearUsuario(nombre,correo)
                                     crearProgresoUsuario(userId)
                             } else {
                                 Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
