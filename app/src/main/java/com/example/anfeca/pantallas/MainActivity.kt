@@ -14,6 +14,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
+import android.content.Context
+import androidx.annotation.NonNull
+
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -23,15 +30,30 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.anfeca.datos.Notificaciones
+import org.jetbrains.annotations.NotNull
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
+        scheduleDailyNotification()
         setContent {
                 AppNavigation()
         }
+    }
+
+    fun scheduleDailyNotification() {
+        val dailyRequest = PeriodicWorkRequestBuilder<Notificaciones>(15, TimeUnit.DAYS)
+            .setInitialDelay(15, TimeUnit.DAYS)
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "daily_notification",
+            ExistingPeriodicWorkPolicy.KEEP,
+            dailyRequest
+        )
     }
 }
 
@@ -51,6 +73,8 @@ fun CameraPreview() {
         modifier = Modifier.fillMaxSize()
     )
 }
+
+
 
 
 
@@ -112,3 +136,5 @@ fun SplashScreen(navController: NavHostController) {
         Text("Cargando...", color = Color.White)
     }
 }
+
+
