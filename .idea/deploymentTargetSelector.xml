@@ -11,6 +11,9 @@
       <SelectionState runConfigName="crearUsuarioYGuardarEnFirestore()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="testLoginInvalido()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

@@ -109,7 +109,7 @@ fun ListaLecciones(lecciones: List<Leccion>, navController: NavController) {
 fun TarjetaLeccion(leccion: Leccion, navController: NavController) {
     Card(
         onClick = {
-            navController.currentBackStackEntry?.savedStateHandle?.set(leccion.curso, leccion.curso)
+            navController.currentBackStackEntry?.savedStateHandle?.set("cursoId", leccion.curso)
             navController.navigate("Leccion/${leccion.id}")
         },
         modifier = Modifier.fillMaxWidth(),

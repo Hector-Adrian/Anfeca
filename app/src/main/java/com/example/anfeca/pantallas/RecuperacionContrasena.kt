@@ -15,12 +15,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.anfeca.R
+import com.example.anfeca.ui.theme.Naranja
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun RecuperacionContrasena(navController: NavController) {
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var mensaje by remember { mutableStateOf<String?>(null) }
+    var mensajeColor by remember { mutableStateOf(Color.Black) }
 
     Image(
         painter = painterResource(id = R.drawable.registro_se),
@@ -45,9 +47,9 @@ fun RecuperacionContrasena(navController: NavController) {
             onValueChange = { email = it },
             placeholder = { Text("Correo electrónico", color = Color.White) },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFFF8000),  // Naranja
+                focusedBorderColor = Naranja,  // Naranja
                 unfocusedBorderColor = Color.White,
-                focusedLabelColor = Color(0xFFFF8000),
+                focusedLabelColor = Naranja,
                 unfocusedLabelColor = Color.White,
                 cursorColor = Color.White,
                 focusedTextColor = Color.White,
@@ -68,8 +70,10 @@ fun RecuperacionContrasena(navController: NavController) {
                         .sendPasswordResetEmail(correo)
                         .addOnCompleteListener { task ->
                             mensaje = if (task.isSuccessful) {
+                                mensajeColor = Naranja
                                 "Si el correo está registrado, recibirás un enlace de recuperación."
                             } else {
+                                mensajeColor = Color.Red
                                 "Error al enviar el correo. Verifica el formato o intenta más tarde."
                             }
                         }
@@ -81,7 +85,7 @@ fun RecuperacionContrasena(navController: NavController) {
                 .fillMaxWidth()
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFF8000),
+                containerColor = Naranja,
                 contentColor = Color.White
             ),
             shape = RoundedCornerShape(8.dp)

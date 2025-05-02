@@ -51,7 +51,7 @@ fun LeccionPantalla(navController: NavController, leccionId: String, cursoId: St
 
     // Cargar preguntas al iniciar
     LaunchedEffect(Unit) {
-        db.collection("LeccionesCurso1")
+        db.collection("Lecciones${cursoId}")
             .document(leccionId)
             .collection("Preguntas${leccionId}") // <- subcolección
             .get()

@@ -34,12 +34,12 @@ fun PerfilUsuario(navController: NavController) {
     LaunchedEffect(user) {
         user?.email?.let { correo ->
             db.collection("Usuarios")
-                .whereEqualTo("correo", correo)
+                .whereEqualTo("email", correo)
                 .get()
                 .addOnSuccessListener { result ->
                     if (!result.isEmpty) {
                         val doc = result.documents.first()
-                        nombre = doc.getString("nombre") ?: "Nombre no disponible"
+                        nombre = doc.getString("name") ?: "Nombre no disponible"
                     } else {
                         nombre = "Usuario no registrado"
                     }

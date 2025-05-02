@@ -16,6 +16,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import com.example.anfeca.R
+import com.example.anfeca.ui.theme.Naranja
 
 @Composable
 fun RegistroPantalla(navController: NavController) {
@@ -38,7 +39,7 @@ fun RegistroPantalla(navController: NavController) {
             text = "IncluNet",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFFF8000) // naranja
+            color = Naranja
         )
 
         // Aquí irá la imagen central más tarde
@@ -68,7 +69,7 @@ fun RegistroPantalla(navController: NavController) {
             Button(
                 onClick = { navController.navigate("cuestionario_registro") },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF8000), // naranja
+                    containerColor = Naranja,
                     contentColor = Color.White
                 ),
                 modifier = Modifier
@@ -84,7 +85,7 @@ fun RegistroPantalla(navController: NavController) {
                 Text("¿Ya tienes una cuenta? ", color = Color.White)
                 Text(
                     "Iniciar sesión",
-                    color = Color.White,
+                    color = Naranja,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
                         navController.navigate("inicio_sesion")

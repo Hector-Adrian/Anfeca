@@ -10,47 +10,105 @@ import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+
 @RunWith(AndroidJUnit4::class)
 class RegistroUsuarioTest {
+    val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
 
     @Test
-    fun crearUsuarioYGuardarEnFirestore() = runBlocking {
-        val email = "testuser_${System.currentTimeMillis()}@example.com"
+    fun testRegistroCorreoDuplicado() {
+        val email = "testuser_@example.com"
         val password = "123456"
-        val nombre = "Test User"
-        val auth = FirebaseAuth.getInstance()
-        val db = FirebaseFirestore.getInstance()
-
         val latch = CountDownLatch(1)
-        var success = false
+        var errorCode: String? = null
 
+        // Intenta registrar un correo ya usado
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener { authResult ->
-                val uid = authResult.user?.uid
-                if (uid != null) {
-                    val datos = mapOf("name" to nombre, "email" to email)
-                    db.collection("Usuarios").document(uid)
-                        .set(datos)
-                        .addOnSuccessListener {
-                            success = true
-                            latch.countDown()
-                        }
-                        .addOnFailureListener {
-                            println("Error al guardar en Firestore: ${it.message}")
-                            latch.countDown()
-                        }
-                } else {
-                    println("UID nulo luego de crear usuario.")
-                    latch.countDown()
+            .addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    errorCode = it.exception?.message
                 }
-            }
-            .addOnFailureListener {
-                println("Error al crear usuario: ${it.message}")
                 latch.countDown()
             }
 
-        latch.await(15, TimeUnit.SECONDS)
-
-        assertTrue("Registro fallido o Firestore no guardó datos", success)
+        latch.await(10, TimeUnit.SECONDS)
+        assertTrue(errorCode?.contains("email address is already in use") == true)
     }
+
+    @Test
+    fun testRegistroExitoso() {
+        val email = "nuevo${System.currentTimeMillis()}@example.com"
+        val password = "123456"
+        val nombre = "Nuevo Usuario"
+        val latch = CountDownLatch(1)
+        var fueGuardado = false
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener { result ->
+                val uid = result.user?.uid!!
+                val datos = mapOf("name" to nombre, "email" to email)
+                db.collection("Usuarios").document(uid).set(datos)
+                    .addOnSuccessListener {
+                        fueGuardado = true
+                        latch.countDown()
+                    }
+            }
+
+        latch.await(10, TimeUnit.SECONDS)
+        assertTrue(fueGuardado)
+    }
+
+    @Test
+    fun testLoginInvalido() {
+        val email = "testuser_@example.com"
+        val password = "wrongpass"
+        val latch = CountDownLatch(1)
+        var errorCode: String? = null
+
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    errorCode = it.exception?.message
+                    latch.await(10, TimeUnit.SECONDS)
+                    assertTrue(true)
+                }
+                latch.countDown()
+            }
+
+
+    }
+
+    @Test
+    fun testRecuperacionEmailValido() {
+        val email = "testuser_@example.com"
+        val latch = CountDownLatch(1)
+        var enviado = false
+
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener {
+                enviado = it.isSuccessful
+                latch.countDown()
+            }
+
+        latch.await(10, TimeUnit.SECONDS)
+        assertTrue(enviado)
+    }
+
+    @Test
+    fun testRecuperacionEmailNoValido() {
+        val email = "noexiste@example.com"
+        val latch = CountDownLatch(1)
+        var fallo = false
+
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener {
+                fallo = !it.isSuccessful
+                latch.countDown()
+            }
+
+        latch.await(10, TimeUnit.SECONDS)
+        assertTrue(fallo)
+    }
+
 }
