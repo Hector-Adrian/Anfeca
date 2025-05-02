@@ -35,7 +35,7 @@ fun RegistroPantalla(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "INICIO",
+            text = "IncluNet",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFFFF8000) // naranja
