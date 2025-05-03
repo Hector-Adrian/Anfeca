@@ -95,70 +95,17 @@ fun PantallaInicio(navController: NavController) {
 
 @Composable
 fun ListaLecciones(lecciones: List<Leccion>, navController: NavController) {
-    LazyColumn(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        items(lecciones) { leccion ->
-            TarjetaLeccion(leccion = leccion, navController = navController)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
+    val leccionesPorCurso = lecciones.groupBy { it.curso }
 
-@Composable
-fun TarjetaLeccion(leccion: Leccion, navController: NavController) {
-    Card(
-        onClick = {
-            navController.currentBackStackEntry?.savedStateHandle?.set("cursoId", leccion.curso)
-            navController.navigate("Leccion/${leccion.id}")
-        },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFDE7B0))
-    )
-    {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "A continuación",
-                color = Color(0xFF1B3A4B),
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = leccion.curso,
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Text(leccion.id)
-                        Text(
-                            leccion.titulo,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    if (leccion.completada) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Completado",
-                            tint = Color(0xFFFF8000),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
+    LazyColumn(modifier = Modifier.padding(16.dp)) {
+        leccionesPorCurso.forEach { (curso, leccionesCurso) ->
+            item {
+                TarjetaCurso(
+                    curso = curso,
+                    lecciones = leccionesCurso,
+                    navController = navController
+                )
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -201,3 +148,58 @@ suspend fun obtenerLeccionesCompletadas(leccion: List<Leccion>): Set<String> {
     }
 }
 
+@Composable
+fun TarjetaCurso(curso: String, lecciones: List<Leccion>, navController: NavController) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFDE7B0))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = curso,
+                color = Color(0xFF1B3A4B),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            lecciones.forEach { leccion ->
+                Card(
+                    onClick = {
+                        navController.currentBackStackEntry?.savedStateHandle?.set("cursoId", leccion.curso)
+                        navController.navigate("Leccion/${leccion.id}")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(leccion.titulo, fontWeight = FontWeight.Bold)
+                        }
+
+                        if (leccion.completada) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = "Completado",
+                                tint = Color(0xFFFF8000),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

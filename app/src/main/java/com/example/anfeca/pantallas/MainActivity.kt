@@ -7,10 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,8 +21,6 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
-import android.content.Context
-import androidx.annotation.NonNull
 
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
@@ -28,10 +29,10 @@ import com.google.firebase.FirebaseApp
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.anfeca.datos.Notificaciones
-import org.jetbrains.annotations.NotNull
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +61,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CameraPreview() {
-    // Usamos AndroidView para insertar PreviewView en Compose
     AndroidView(
         factory = { context ->
             PreviewView(context).apply {
@@ -81,48 +81,63 @@ fun CameraPreview() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val rutaActual = currentBackStackEntry?.destination?.route
+    val rutasConBarra = listOf("PantallaInicio", "Repaso", "Asistente", "Explorar","PerfilUsuario")
 
-    NavHost(navController = navController, startDestination = "splash") {
-        composable("splash") { SplashScreen(navController) }
-        composable("registro") { RegistroPantalla(navController) }
-        composable("cuestionario_registro") { CuestionarioRegistro(navController) }
-        composable("inicio_sesion") { InicioSesion(navController) }
-        composable("PantallaInicio") { PantallaInicio(navController) }
-        composable("RegistroDatosUsuario") { RegistroDatosUsuario(navController) }
-        composable(
-            route = "Leccion/{leccionId}",
-            arguments = listOf(navArgument("leccionId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val leccionId = backStackEntry.arguments?.getString("leccionId") ?: ""
-            val cursoId = navController.previousBackStackEntry
-                ?.savedStateHandle
-                ?.get<String>("cursoId") ?: ""
+    val mostrarBarraInferior = rutasConBarra.any { rutaActual?.startsWith(it) == true }
 
-            LeccionPantalla(
-                leccionId = leccionId,
-                cursoId = cursoId,
-                navController = navController
-            )
+    Scaffold(
+        bottomBar = {
+            if (mostrarBarraInferior && rutaActual != null) {
+                BarraNavegacion(navController, rutaActual)
+            }
+        },
+        containerColor = Color.Black
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = "splash",
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable("splash") { SplashScreen(navController) }
+            composable("registro") { RegistroPantalla(navController) }
+            composable("cuestionario_registro") { CuestionarioRegistro(navController) }
+            composable("inicio_sesion") { InicioSesion(navController) }
+            composable("PantallaInicio") { PantallaInicio(navController) }
+            composable("RegistroDatosUsuario") { RegistroDatosUsuario(navController) }
+            composable(
+                route = "Leccion/{leccionId}",
+                arguments = listOf(navArgument("leccionId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val leccionId = backStackEntry.arguments?.getString("leccionId") ?: ""
+                val cursoId = navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<String>("cursoId") ?: ""
+
+                LeccionPantalla(leccionId = leccionId, cursoId = cursoId, navController = navController)
+            }
+            composable("RecuperacionContrasena") { RecuperacionContrasena(navController) }
+            composable("PerfilUsuario") { PerfilUsuario(navController) }
+            composable("Repaso") { RepasoPantalla(navController) }
+            composable("Asistente") { AsistentePantalla(navController) }
+            composable("Explorar") { ExplorarPantalla(navController) }
         }
-        composable("RecuperacionContrasena") { RecuperacionContrasena(navController)  }
-        composable("PerfilUsuario"){ PerfilUsuario(navController)}
-
     }
 }
+
 
 @Composable
 fun SplashScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(2000) // Espera 2 segundos
+        kotlinx.coroutines.delay(2000)
 
         val usuario = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
         if (usuario != null) {
-            // Usuario ya autenticado, va directo a la pantalla principal
             navController.navigate("PantallaInicio") {
                 popUpTo("splash") { inclusive = true }
             }
         } else {
-            // Usuario no autenticado, redirige a inicio de sesión
             navController.navigate("registro") {
                 popUpTo("splash") { inclusive = true }
             }

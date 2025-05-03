@@ -19,6 +19,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun PerfilUsuario(navController: NavController) {
+    var mostrarConfirmacion by remember { mutableStateOf(false) }
+    var mostrarExito by remember { mutableStateOf(false) }
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
     val db = FirebaseFirestore.getInstance()
@@ -98,27 +100,62 @@ fun PerfilUsuario(navController: NavController) {
         item {
             // Botón rojo: Reiniciar progreso
             Button(
-                onClick = {
-                    user?.uid?.let { uid ->
-                        db.collection("Usuarios")
-                            .document(uid)
-                            .collection("Progreso")
-                            .get()
-                            .addOnSuccessListener { cursos ->
-                                for (curso in cursos) {
-                                    db.collection("Usuarios")
-                                        .document(uid)
-                                        .collection("Progreso")
-                                        .document(curso.id)
-                                        .set(mapOf<String, Any>()) // Reinicia el documento
-                                }
-                            }
-                    }
-                },
+                onClick = { mostrarConfirmacion = true },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-            ) {
+            ){
                 Text("Reiniciar datos", color = Color.White)
             }
+            if (mostrarConfirmacion) {
+                AlertDialog(
+                    onDismissRequest = { mostrarConfirmacion = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            mostrarConfirmacion = false
+                            // Reiniciar progreso
+                            user?.uid?.let { uid ->
+                                db.collection("Usuarios")
+                                    .document(uid)
+                                    .collection("Progreso")
+                                    .get()
+                                    .addOnSuccessListener { cursos ->
+                                        for (curso in cursos) {
+                                            db.collection("Usuarios")
+                                                .document(uid)
+                                                .collection("Progreso")
+                                                .document(curso.id)
+                                                .set(mapOf<String, Any>()) // Borra progreso
+                                        }
+                                        mostrarExito = true
+                                    }
+                            }
+                        }) {
+                            Text("Sí", color = Color.Red)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { mostrarConfirmacion = false }) {
+                            Text("Cancelar", color = Color.Gray)
+                        }
+                    },
+                    title = { Text("¿Reiniciar progreso?", color = Color.White) },
+                    text = { Text("¿Estás seguro de que deseas reiniciar tu progreso?", color = Color.White) },
+                    containerColor = Color.DarkGray
+                )
+            }
+            if (mostrarExito) {
+                AlertDialog(
+                    onDismissRequest = { mostrarExito = false },
+                    confirmButton = {
+                        TextButton(onClick = { mostrarExito = false }) {
+                            Text("Aceptar", color = Color.White)
+                        }
+                    },
+                    title = { Text("Datos reiniciados", color = Color.White) },
+                    text = { Text("Tu progreso se ha reiniciado correctamente.", color = Color.White) },
+                    containerColor = Color(0xFF4CAF50)
+                )
+            }
+
         }
     }
 }
