@@ -83,7 +83,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val rutaActual = currentBackStackEntry?.destination?.route
-    val rutasConBarra = listOf("PantallaInicio", "Repaso", "Asistente", "Explorar","PerfilUsuario")
+    val rutasConBarra = listOf("PantallaInicio", "Repaso", "Asistente", "Explorar","PerfilUsuario","Asistente","Recursos","cursos","videos")
 
     val mostrarBarraInferior = rutasConBarra.any { rutaActual?.startsWith(it) == true }
 

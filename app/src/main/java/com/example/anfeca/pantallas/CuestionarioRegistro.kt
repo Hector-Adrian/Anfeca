@@ -25,11 +25,11 @@ fun CuestionarioRegistro(navController: NavController) {
     var preguntaIndex by remember { mutableStateOf(0) }
     var nivel by remember { mutableStateOf(0) }
 
-    // Selección múltiple (por índice)
+
     val respuestas = remember { mutableStateMapOf<Int, Set<String>>() }
     var seleccionados by remember { mutableStateOf(setOf<String>()) }
 
-    // Selección única (nivel)
+
     var nivelSeleccionado by remember { mutableStateOf("") }
 
     val preguntaCuestionarios = listOf(
@@ -68,7 +68,7 @@ fun CuestionarioRegistro(navController: NavController) {
     Image(
         painter = painterResource(id = R.drawable.registro_se),
         contentDescription = null,
-        contentScale = ContentScale.Crop, // Ajusta según tu diseño
+        contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize()
     )
 
@@ -130,7 +130,7 @@ fun CuestionarioRegistro(navController: NavController) {
                         "Sé bastante" -> 3
                         else -> 0
                     }
-                    // Aquí podrías guardar los datos si lo necesitas
+
                     navController.navigate("RegistroDatosUsuario")
                 }
             },

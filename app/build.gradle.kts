@@ -72,6 +72,12 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.google.firebase.firestore.ktx)
     implementation(libs.androidx.work)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
+
+
 
 
 }
