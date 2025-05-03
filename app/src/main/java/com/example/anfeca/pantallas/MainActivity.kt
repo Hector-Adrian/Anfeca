@@ -122,6 +122,9 @@ fun AppNavigation() {
             composable("Repaso") { RepasoPantalla(navController) }
             composable("Asistente") { AsistentePantalla(navController) }
             composable("Explorar") { ExplorarPantalla(navController) }
+            composable("Recursos") { RecursosPantalla(navController) }
+            composable("cursos") { CursosPantalla() }
+            composable("videos") { VideosPantalla() }
         }
     }
 }
