@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven { url = uri("https://repo.cloudinary.com/artifactory/android") }
     }
 }
 dependencyResolutionManagement {

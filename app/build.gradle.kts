@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.media3.exoplayer)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,8 +78,10 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
-
-
-
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.retrofit)
+    implementation(libs.converter.scalars)
+    implementation(libs.cloudinary)
 
 }
