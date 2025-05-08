@@ -3,6 +3,19 @@
   <component name="AndroidTestResultsUserPreferences">
     <option name="androidTestResultsTableState">
       <map>
+        <entry key="-1686628745">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Small_Phone" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-714456741">
           <value>
             <AndroidTestResultsTableState>
@@ -22,6 +35,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Small_Phone" value="120" />
                   <entry key="Tests" value="360" />
                   <entry key="samsung SM-A325M" value="120" />
                 </map>
@@ -50,6 +64,20 @@
                   <entry key="Duration" value="90" />
                   <entry key="Small_Phone" value="120" />
                   <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="2089542155">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Small_Phone" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung SM-A325M" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

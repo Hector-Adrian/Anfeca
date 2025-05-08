@@ -8,13 +8,13 @@
       <SelectionState runConfigName="RegistroUsuarioTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="crearUsuarioYGuardarEnFirestore()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="testLoginInvalido()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="RecursosTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ActividadesTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testCompletarYReiniciarLeccion()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

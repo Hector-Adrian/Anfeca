@@ -84,5 +84,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.scalars)
     implementation(libs.cloudinary)
+    implementation(libs.coil.compose)
+
 
 }
