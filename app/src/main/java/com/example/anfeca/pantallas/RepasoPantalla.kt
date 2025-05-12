@@ -1,37 +1,74 @@
 package com.example.anfeca.pantallas
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.example.anfeca.R
 
 @Composable
 fun RepasoPantalla(navController: NavController) {
+    val context = LocalContext.current
+    var permisoConcedido by remember { mutableStateOf(false) }
+
+    val permisoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        permisoConcedido = concedido
+    }
+
+    LaunchedEffect(Unit) {
+        val permisoActual = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        )
+        if (permisoActual != PackageManager.PERMISSION_GRANTED) {
+            permisoLauncher.launch(Manifest.permission.CAMERA)
+        } else {
+            permisoConcedido = true
+        }
+    }
+
+    if (permisoConcedido) {
+        MostrarVistaCamara()
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Se necesita permiso de cámara para usar esta función.", color = Color.White)
+        }
+    }
+}
+
+@Composable
+fun MostrarVistaCamara() {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
@@ -42,14 +79,12 @@ fun RepasoPantalla(navController: NavController) {
         }
     }
 
-    // Lista de imágenes disponibles (en drawable)
+    // Lista de imágenes (asegúrate de tener estas imágenes en drawable)
     val imagenesSenias = listOf(
         R.drawable.sena_a,
         R.drawable.sena_b,
         R.drawable.sena_c
     )
-
-    // Selección aleatoria de imagen al iniciar
     val imagenAleatoria = remember { imagenesSenias.random() }
 
     LaunchedEffect(Unit) {
@@ -101,5 +136,4 @@ fun RepasoPantalla(navController: NavController) {
         }
     }
 }
-
 
