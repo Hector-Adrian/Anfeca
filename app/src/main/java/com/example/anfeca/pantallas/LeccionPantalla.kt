@@ -125,7 +125,7 @@ fun LeccionPantalla(navController: NavController, leccionId: String, cursoId: St
                                             db.collection("Usuarios")
                                                 .document(nombreUsuario)
                                                 .collection("Progreso")
-                                                .document("Curso1")
+                                                .document(cursoId)
                                                 .update(leccionId, true)
                                         }
                                         navController.navigate("PantallaInicio") {

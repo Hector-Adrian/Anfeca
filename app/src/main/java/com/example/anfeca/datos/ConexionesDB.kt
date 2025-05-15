@@ -42,6 +42,18 @@ fun crearProgresoUsuario(uid: String) {
         .collection("Progreso")
         .document("Curso1")
         .set(progreso)
+
+    db.collection("Usuarios")
+        .document(uid)
+        .collection("Progreso")
+        .document("Curso2")
+        .set(progreso)
+
+    db.collection("Usuarios")
+        .document(uid)
+        .collection("Progreso")
+        .document("Curso3")
+        .set(progreso)
 }
 
 
