@@ -1,7 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.example.anfeca.pantallas
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,11 +19,20 @@ import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-data class CohereChatRequest(val message: String, val model: String = "command-r-plus", val chat_history: List<CohereMessage> = emptyList())
+// Modelos de datos actualizados según la API de Cohere
+data class CohereChatRequest(
+    val message: String,
+    val model: String = "command-r-plus",
+    val chat_history: List<Map<String, String>> = emptyList(),
+    val connectors: List<Map<String, String>> = listOf(mapOf("id" to "web-search")),
+    val preamble: String = "Eres un asistente experto en lenguaje de señas. Proporciona respuestas claras y concisas sobre señas, su uso y significado."
+)
 
-data class CohereMessage(val role: String, val message: String)
-
-data class CohereChatResponse(val text: String)
+data class CohereChatResponse(
+    val text: String,
+    val generation_id: String? = null,
+    val chat_history: List<Map<String, String>>? = null
+)
 
 interface CohereAPI {
     @POST("v1/chat")
@@ -35,9 +42,14 @@ interface CohereAPI {
     ): CohereChatResponse
 }
 
+data class Mensaje(val role: String, val texto: String)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AsistentePantalla(navController: NavController) {
+    // Usa tu API key real - Ten cuidado con incluir claves en código fuente
     val apiKey = "Bearer NVa1fx9L2OkSuTdc4W0EFvQD4oIjwptnwLA9y8E4"
+
     val retrofit = remember {
         Retrofit.Builder()
             .baseUrl("https://api.cohere.ai/")
@@ -46,15 +58,16 @@ fun AsistentePantalla(navController: NavController) {
     }
     val cohereApi = retrofit.create(CohereAPI::class.java)
 
-    var mensajes by remember { mutableStateOf<List<CohereMessage>>(emptyList()) }
+    var mensajes by remember { mutableStateOf<List<Mensaje>>(emptyList()) }
     var input by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     var cargando by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Asistente Virtual") },
+                title = { Text("Asistente de Lenguaje de Señas") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
@@ -69,57 +82,108 @@ fun AsistentePantalla(navController: NavController) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
                 items(mensajes) { mensaje ->
-                    val color = if (mensaje.role == "USER") Color(0xFFFF8000) else Color.White
-                    Text(
-                        text = "${if (mensaje.role == "USER") "Tú" else "Asistente"}: ${mensaje.message}",
-                        color = color,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
+                    val color = if (mensaje.role == "USER") Color(0xFFFF8000) else Color(0xFF4CAF50)
+                    val alignment = if (mensaje.role == "USER") Alignment.End else Alignment.Start
+
+                    Surface(
+                        color = color.copy(alpha = 0.2f),
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .fillMaxWidth(0.85f)
+                            .align(alignment)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = if (mensaje.role == "USER") "Tú" else "Asistente",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = color
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = mensaje.texto,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                 }
             }
 
+            error?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
             if (cargando) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(vertical = 8.dp)
+                )
             }
 
             OutlinedTextField(
                 value = input,
                 onValueChange = { input = it },
-                placeholder = { Text("Escribe tu pregunta...") },
-                modifier = Modifier.fillMaxWidth()
+                placeholder = { Text("Escribe tu pregunta sobre lenguaje de señas...") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !cargando
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
-                    val nuevaPregunta = CohereMessage("USER", input)
-                    mensajes = mensajes + nuevaPregunta
-                    cargando = true
-                    val historial = mensajes
+                    if (input.isNotBlank()) {
+                        val nuevaPregunta = Mensaje("USER", input)
+                        mensajes = mensajes + nuevaPregunta
+                        cargando = true
+                        error = null
 
-                    scope.launch {
-                        try {
-                            val response = cohereApi.chat(
-                                auth = apiKey,
-                                body = CohereChatRequest(
-                                    message = input,
-                                    chat_history = historial
-                                )
+                        // Convertir el historial al formato esperado por Cohere
+                        val historial = mensajes.map { mensaje ->
+                            mapOf(
+                                "role" to if (mensaje.role == "USER") "USER" else "CHATBOT",
+                                "message" to mensaje.texto
                             )
-                            val respuesta = CohereMessage("CHATBOT", response.text)
-                            mensajes = mensajes + respuesta
-                        } catch (e: Exception) {
-                            mensajes = mensajes + CohereMessage("CHATBOT", "Error: ${e.message}")
-                        } finally {
-                            input = ""
-                            cargando = false
+                        }
+
+                        scope.launch {
+                            try {
+                                val response = cohereApi.chat(
+                                    auth = apiKey,
+                                    body = CohereChatRequest(
+                                        message = input,
+                                        chat_history = historial
+                                    )
+                                )
+
+                                if (response.text.isNotEmpty()) {
+                                    val respuesta = Mensaje("CHATBOT", response.text)
+                                    mensajes = mensajes + respuesta
+                                } else {
+                                    error = "Respuesta vacía recibida de Cohere"
+                                }
+                            } catch (e: Exception) {
+                                error = "Error: ${e.message ?: "Desconocido"}"
+                                e.printStackTrace()
+                            } finally {
+                                input = ""
+                                cargando = false
+                            }
                         }
                     }
                 },
-                enabled = input.isNotBlank(),
+                enabled = input.isNotBlank() && !cargando,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Enviar")
@@ -127,4 +191,3 @@ fun AsistentePantalla(navController: NavController) {
         }
     }
 }
-
