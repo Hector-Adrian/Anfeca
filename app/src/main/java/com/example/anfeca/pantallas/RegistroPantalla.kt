@@ -39,11 +39,12 @@ fun RegistroPantalla(navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "IncluNet",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Naranja
+            Image(
+                painter = painterResource(id = R.drawable.inclunet),
+                contentDescription = "Imagen de inicio",
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .aspectRatio(2.0f),
             )
 
             // Imagen

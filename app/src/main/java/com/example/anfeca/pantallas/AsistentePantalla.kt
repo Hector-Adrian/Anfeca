@@ -47,7 +47,6 @@ data class Mensaje(val role: String, val texto: String)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AsistentePantalla(navController: NavController) {
-    // Usa tu API key real - Ten cuidado con incluir claves en código fuente
     val apiKey = "Bearer NVa1fx9L2OkSuTdc4W0EFvQD4oIjwptnwLA9y8E4"
 
     val retrofit = remember {
@@ -149,7 +148,6 @@ fun AsistentePantalla(navController: NavController) {
                         cargando = true
                         error = null
 
-                        // Convertir el historial al formato esperado por Cohere
                         val historial = mensajes.map { mensaje ->
                             mapOf(
                                 "role" to if (mensaje.role == "USER") "USER" else "CHATBOT",
