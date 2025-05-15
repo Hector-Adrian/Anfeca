@@ -69,9 +69,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.camerax.core)
-    implementation(libs.camerax.camera2)
-    implementation(libs.camerax.lifecycle)
-    implementation(libs.camerax.view)
     implementation(platform(libs.firebase.bom))
     implementation(libs.google.firebase.firestore.ktx)
     implementation(libs.androidx.work)
@@ -85,4 +82,10 @@ dependencies {
     implementation(libs.cloudinary)
     implementation(libs.coil.compose)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.tasks.vision)
+    implementation (libs.androidx.camera.camera2.v142)
+    implementation (libs.androidx.camera.lifecycle.v142)
+    implementation (libs.androidx.camera.view.v142)
+
+
 }
