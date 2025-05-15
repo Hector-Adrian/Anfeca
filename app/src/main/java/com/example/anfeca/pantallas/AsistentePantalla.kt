@@ -2,22 +2,18 @@
 
 package com.example.anfeca.pantallas
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.anfeca.R
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -25,35 +21,35 @@ import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-data class Message(val role: String, val content: String)
-data class OpenAIRequest(val model: String = "gpt-3.5-turbo", val messages: List<Message>)
-data class OpenAIResponse(val choices: List<Choice>)
-data class Choice(val message: Message)
+data class CohereChatRequest(val message: String, val model: String = "command-r-plus", val chat_history: List<CohereMessage> = emptyList())
 
-interface OpenAIApi {
-    @POST("v1/chat/completions")
-    suspend fun sendMessage(
-        @Body request: OpenAIRequest,
-        @Header("Authorization") auth: String
-    ): OpenAIResponse
+data class CohereMessage(val role: String, val message: String)
+
+data class CohereChatResponse(val text: String)
+
+interface CohereAPI {
+    @POST("v1/chat")
+    suspend fun chat(
+        @Header("Authorization") auth: String,
+        @Body body: CohereChatRequest
+    ): CohereChatResponse
 }
 
 @Composable
 fun AsistentePantalla(navController: NavController) {
-    val apiKey = "Bearer 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"
+    val apiKey = "Bearer NVa1fx9L2OkSuTdc4W0EFvQD4oIjwptnwLA9y8E4"
     val retrofit = remember {
         Retrofit.Builder()
-            .baseUrl("https://api.openai.com/")
+            .baseUrl("https://api.cohere.ai/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-    val openAiApi = retrofit.create(OpenAIApi::class.java)
+    val cohereApi = retrofit.create(CohereAPI::class.java)
 
-    var mensajes by remember { mutableStateOf(listOf<Message>()) }
+    var mensajes by remember { mutableStateOf<List<CohereMessage>>(emptyList()) }
     var input by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     var cargando by remember { mutableStateOf(false) }
-
 
     Scaffold(
         topBar = {
@@ -75,9 +71,9 @@ fun AsistentePantalla(navController: NavController) {
         ) {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(mensajes) { mensaje ->
-                    val color = if (mensaje.role == "user") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                    val color = if (mensaje.role == "USER") Color(0xFFFF8000) else Color.White
                     Text(
-                        text = "${if (mensaje.role == "user") "Tú" else "Asistente"}: ${mensaje.content}",
+                        text = "${if (mensaje.role == "USER") "Tú" else "Asistente"}: ${mensaje.message}",
                         color = color,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
@@ -99,28 +95,26 @@ fun AsistentePantalla(navController: NavController) {
 
             Button(
                 onClick = {
-                    val pregunta = Message("user", input)
-                    mensajes = mensajes + pregunta
-                    input = ""
+                    val nuevaPregunta = CohereMessage("USER", input)
+                    mensajes = mensajes + nuevaPregunta
                     cargando = true
+                    val historial = mensajes
 
                     scope.launch {
                         try {
-                            val response = openAiApi.sendMessage(
-                                request = OpenAIRequest(
-                                    messages = listOf(
-                                        Message("system", "Eres un asistente experto en Lengua de Señas Mexicana."),
-                                    ) + mensajes + pregunta
-                                ),
-                                auth = apiKey
+                            val response = cohereApi.chat(
+                                auth = apiKey,
+                                body = CohereChatRequest(
+                                    message = input,
+                                    chat_history = historial
+                                )
                             )
-                            val respuesta = response.choices.firstOrNull()?.message
-                            if (respuesta != null) {
-                                mensajes = mensajes + respuesta
-                            }
+                            val respuesta = CohereMessage("CHATBOT", response.text)
+                            mensajes = mensajes + respuesta
                         } catch (e: Exception) {
-                            mensajes = mensajes + Message("assistant", "Ocurrió un error: ${e.message}")
+                            mensajes = mensajes + CohereMessage("CHATBOT", "Error: ${e.message}")
                         } finally {
+                            input = ""
                             cargando = false
                         }
                     }
@@ -133,3 +127,4 @@ fun AsistentePantalla(navController: NavController) {
         }
     }
 }
+

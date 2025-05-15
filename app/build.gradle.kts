@@ -81,10 +81,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
-    implementation(libs.retrofit)
     implementation(libs.converter.scalars)
     implementation(libs.cloudinary)
     implementation(libs.coil.compose)
-
-
+    implementation(libs.kotlinx.coroutines.android)
 }

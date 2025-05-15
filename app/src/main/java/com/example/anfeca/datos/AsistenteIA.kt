@@ -30,3 +30,6 @@ interface OpenAIApi {
         @Header("Authorization") auth: String = "Bearer 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"
     ): OpenAIResponse
 }
+
+
+
