@@ -120,6 +120,7 @@ fun AppNavigation() {
             composable("RecuperacionContrasena") { RecuperacionContrasena(navController) }
             composable("PerfilUsuario") { PerfilUsuario(navController) }
             composable("Repaso") { RepasoPantalla(navController) }
+            composable("Camara") { CamaraPantalla(navController) }
             composable("Asistente") { AsistentePantalla(navController) }
             composable("Explorar") { ExplorarPantalla(navController) }
             composable("Recursos") { RecursosPantalla(navController) }

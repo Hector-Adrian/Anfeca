@@ -55,7 +55,7 @@ fun ExplorarPantalla(navController: NavController) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { navController.navigate("Repaso") },
+                .clickable { navController.navigate("Camara") },
             colors = CardDefaults.cardColors(containerColor = Color(0xFFCAD2DC)),
             shape = RoundedCornerShape(12.dp),
         ) {
